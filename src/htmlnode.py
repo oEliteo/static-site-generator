@@ -231,7 +231,7 @@ def get_heading_hashtag_count(block):
             return hash_count
 
 
-def generate_page(src, template_path, dst):
+def generate_page(src, template_path, dst, basepath):
     print(f"Generating page from {src} to {dst} using {template_path}.")
 
     try:
@@ -254,6 +254,8 @@ def generate_page(src, template_path, dst):
         content = content.to_html()
         html = template.replace("{{ Title }}", title)
         html = html.replace("{{ Content }}", content)
+        html = html.replace('href="/', f'href="{basepath}')
+        html = html.replace('src="/', f'src="{basepath}')
         dirname = os.path.dirname(dst)
         if dst.endswith(".md"):
             html_path = dst.replace(".md", ".html")
@@ -264,7 +266,7 @@ def generate_page(src, template_path, dst):
             f.write(html)
 
 
-def recurse_generate_pages(src, template_path, dst):
+def recurse_generate_pages(src, template_path, dst, basepath):
     items = os.listdir(src)
 
     with open(template_path, "r") as f:
@@ -279,6 +281,6 @@ def recurse_generate_pages(src, template_path, dst):
             and from_path.endswith(".md")
             or from_path.endswith(".markdown")
         ):
-            generate_page(from_path, template_path, to_path)
+            generate_page(from_path, template_path, to_path, basepath)
         else:
-            recurse_generate_pages(from_path, template_path, to_path)
+            recurse_generate_pages(from_path, template_path, to_path, basepath)
